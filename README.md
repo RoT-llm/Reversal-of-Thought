@@ -1,5 +1,6 @@
 <h1 align="center"> Reversal of Thought: Enhancing Large Language Models with Preference-Guided Reverse Reasoning Warm-up </h1>
 <p align="center"> <strong>💌 Contact us:</strong> <a href="mailto:reversalofthought@163.com">reversalofthought@163.com</a> </p>
+
 RoT improves reasoning accuracy and efficiency while minimizing computational costs, leveraging **Preference-Guided Reverse Reasoning** and a **Cognitive Preference Manager** to optimally explore LLM reasoning with cognitive preferences.
 
 ## 📚 Dataset
