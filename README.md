@@ -2,7 +2,12 @@
 
 RoT improves reasoning accuracy and efficiency while minimizing computational costs, leveraging **Preference-Guided Reverse Reasoning** and a **Cognitive Preference Manager** to optimally explore LLM reasoning with cognitive preferences.
 
-
+## Dataset
+- [24-Game](https://huggingface.co/datasets/nlile/24-game);
+- [BIG-Bench](https://github.com/google/BIG-bench);
+- [PythonProgrammingPuzzles](https://github.com/microsoft/PythonProgrammingPuzzles);
+- [MGSM](https://github.com/google-research/url-nlp/tree/main/mgsm);
+- SonnetWriting([1](https://huggingface.co/datasets/turingmachine/meta-prompting/viewer/default/SonnetWriting),[2](https://github.com/iljones00/Shakespearean-Sonnets-GPT))
 ## Model Architecture
 <img src="./asset/Reversal_Of_Thought.png">
 
