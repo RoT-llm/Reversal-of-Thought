@@ -1,6 +1,7 @@
 from openai import OpenAI
 import transformers
 from sentence_transformers import SentenceTransformer, util
+from prompt import *
 def evaluate_preference(A, B, pipeline):
     """
     Evaluate which response is better between A and B using the pipeline.
@@ -39,7 +40,7 @@ def rot_pipeline(pipeline, reversal_of_thought, demos, warmup=3):
 
     # Step 1: Reverse Reasoning Warm-up
     for i in range(warmup):
-        R_i = pipeline.get_respond(reversal_of_thought, demos, prob=True)
+        R_i = pipeline.get_respond(reversal_of_thought, demos, prob=True,Switch="candidate")
         responses.append(R_i[0])
         P_res.append(R_i[1])
     P_pre = {}
@@ -65,7 +66,11 @@ def rot_pipeline(pipeline, reversal_of_thought, demos, warmup=3):
     return P_opt, responses[P_opt]
 
 class Pipeline:
-    def __init__(self, model_id, api_key=None, base_url='https://api.openai.com/v1/',prob=False,max_tokens=4096):
+    def __init__(self, model_id, api_key=None,
+                 base_url='https://api.openai.com/v1/',
+                 prob=False,max_tokens=4096,
+                 candidate_temperature=0.7,
+                 instantiation_temperature=0.1):
         self.api = False
         self.local = False
         self.base_url = base_url
@@ -73,7 +78,8 @@ class Pipeline:
         self.max_tokens=max_tokens
         self.prob=prob
         self.cpm = SentenceTransformer("dunzhang/stella_en_1.5B_v5", trust_remote_code=True).cuda()
-
+        self.candidate_temperature=candidate_temperature
+        self.instantiation_temperature=instantiation_temperature
         if api_key is None:
             import torch
             self.local = True
@@ -93,22 +99,36 @@ class Pipeline:
         similarity = util.pytorch_cos_sim(embedding1, embedding2)
 
         return similarity.item()
-    def get_respond(self, meta_prompt, user_prompt, max_tokens=None, prob=False):
-        global logprobs
+    def get_respond(self, meta_prompt, user_prompt, max_tokens=None, prob=False, Switch="candidate"):
+        global logprobs, completion
         self.prob=prob
         if max_tokens:
             self.max_tokens=max_tokens
         if self.api:
             client = OpenAI(api_key=self.api_key, base_url=self.base_url)
-            completion = client.chat.completions.create(
-                model=self.model_id,
-                messages=[
-                    {"role": "system", "content": meta_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                max_tokens=self.max_tokens,
-                logprobs=self.prob
-            )
+            if Switch=="candidate":
+
+                completion = client.chat.completions.create(
+                    model=self.model_id,
+                    messages=[
+                        {"role": "system", "content": meta_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    max_tokens=self.max_tokens,
+                    logprobs=self.prob,
+                    temperature=self.candidate_temperature
+                )
+            elif Switch=="instantiation":
+                completion = client.chat.completions.create(
+                    model=self.model_id,
+                    messages=[
+                        {"role": "system", "content": meta_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    max_tokens=self.max_tokens,
+                    logprobs=self.prob,
+                    temperature=self.instantiation_temperature
+                )
             print(completion)
             response = completion.choices[0].message.content
 
