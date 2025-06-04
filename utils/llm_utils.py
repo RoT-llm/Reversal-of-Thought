@@ -1,7 +1,10 @@
 from openai import OpenAI
 import transformers
+from safetensors import torch
 from sentence_transformers import SentenceTransformer, util
 from prompt import *
+import numpy as np
+import math
 def evaluate_preference(A, B, pipeline):
     """
     Evaluate which response is better between A and B using the pipeline.
@@ -101,6 +104,8 @@ class Pipeline:
                 model_kwargs={"torch_dtype": torch.bfloat16},
                 device_map='auto'
             )
+            self.model = self.pipeline.model
+            self.tokenizer = self.pipeline.tokenizer
         else:
             self.api = True
             self.api_key = api_key
@@ -140,79 +145,70 @@ class Pipeline:
         self.prob=prob
         if max_tokens:
             self.max_tokens=max_tokens
+        messages=[
+            {"role": "system", "content": meta_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
         if self.api:
             client = OpenAI(api_key=self.api_key, base_url=self.base_url)
-            if Switch=="candidate":
+            temperature = self.candidate_temperature if Switch == "candidate" else self.instantiation_temperature
+            completion = client.chat.completions.create(
+                model=self.model_id,
+                messages=messages,
+                max_tokens=self.max_tokens,
+                logprobs=self.prob,
+                temperature=temperature
+            )
 
-                completion = client.chat.completions.create(
-                    model=self.model_id,
-                    messages=[
-                        {"role": "system", "content": meta_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    max_tokens=self.max_tokens,
-                    logprobs=self.prob,
-                    temperature=self.candidate_temperature
-                )
-            elif Switch=="instantiation":
-                completion = client.chat.completions.create(
-                    model=self.model_id,
-                    messages=[
-                        {"role": "system", "content": meta_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    max_tokens=self.max_tokens,
-                    logprobs=self.prob,
-                    temperature=self.instantiation_temperature
-                )
             print(completion)
             response = completion.choices[0].message.content
+            if self.prob:
+                logprobs = [token.logprob for token in completion.choices[0].logprobs.content]
+                probs = [math.exp(logprob) for logprob in logprobs]
+                probs=np.mean(probs)
+                return response, probs
 
 
         else:
-            messages = [
-                {"role": "system", "content": meta_prompt},
-                {"role": "user", "content": user_prompt},
-            ]
 
-            prompt = self.pipeline.tokenizer.apply_chat_template(
-                messages,
+            prompt = self.tokenizer.apply_chat_template(
+                messages=messages,
                 tokenize=False,
                 add_generation_prompt=True
             )
 
+            inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
             terminators = [
-                self.pipeline.tokenizer.eos_token_id,
-                self.pipeline.tokenizer.convert_tokens_to_ids("<|eot|>")
+                self.tokenizer.eos_token_id,
+                self.tokenizer.convert_tokens_to_ids("<|eot|>")
             ]
-            if Switch == "candidate":
-                outputs = self.pipeline(
-                    prompt,
+
+            temperature = self.candidate_temperature if Switch == "candidate" else self.instantiation_temperature
+            with torch.no_grad():
+                outputs = self.model.generate(
+                    **inputs,
                     max_new_tokens=self.max_tokens,
-                    eos_token_id=terminators,
+                    return_dict_in_generate=True,
+                    output_scores=True,
                     do_sample=True,
-                    temperature=self.candidate_temperature,
+                    temperature=temperature,
                     top_p=0.9,
-                    logprobs=self.prob
+                    eos_token_id=terminators
                 )
-            elif Switch=="instantiation":
-                outputs = self.pipeline(
-                    prompt,
-                    max_new_tokens=self.max_tokens,
-                    eos_token_id=terminators,
-                    do_sample=True,
-                    temperature=self.instantiation_temperature,
-                    top_p=0.9,
-                    logprobs=self.prob
-                )
-            response = outputs[0]["generated_text"][len(prompt):]
-        if self.prob:
-            logprobs = [token.logprob for token in completion.choices[0].logprobs.content]
-            import numpy as np
-            import math
-            probs = [math.exp(logprob) for logprob in logprobs]
-            probs=np.mean(probs)
-            return response, probs
-        else:
-            return response
+
+            generated_ids = outputs.sequences[0][inputs["input_ids"].shape[-1]:]
+            response = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
+            if self.prob:
+                logprobs = []
+                for i, score in enumerate(outputs.scores):
+                    token_id = generated_ids[i]
+                    logit = score[0]
+                    prob = torch.nn.functional.log_softmax(logit, dim=0)[token_id]
+                    logprobs.append(prob.item())
+                tokens = self.tokenizer.convert_ids_to_tokens(generated_ids)
+                avg_prob = np.mean([math.exp(lp) for lp in logprobs])
+                return response, avg_prob
+
+        return response
+
 

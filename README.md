@@ -6,14 +6,56 @@
 
 RoT improves reasoning accuracy and efficiency while minimizing computational costs, leveraging **Preference-Guided Reverse Reasoning** and a **Cognitive Preference Manager** to optimally explore LLM reasoning with cognitive preferences.
 
+<img src="./asset/Reversal_Of_Thought.png">
+
+## 🔥 News
+
+- `2025.05` 🎉🎉🎉 Thrilled to share that our [_Reversal of Thought_](https://arxiv.org/pdf/2410.12323) has been accepted to **ACL2025 Main**!
+  > _Reversal of Thought_ enhances LLM reasoning via Preference-Guided Reverse Reasoning and a Cognitive Preference Manager, improving efficiency and interpretability with minimal computational overhead.
+
+- `2025.05` 🎉🎉🎉 Thrilled to share that our RoT-based work [_Less is More_](https://arxiv.org/abs/2504.16408) [[Code](https://github.com/Jiahao-Yuan/Less-is-More)] has been accepted to the **LLMSR@XLLM ACL 2025 workshop**!
+  > 🏆 **Achieved 3rd place** in the LLMSR@XLLM 2025 Shared Task-III: [LLM for Structural Reasoning](https://github.com/xllms/LLMSR)!
+
+- `2025-04` 🎉🎉🎉 RoT demo (v2) demo released with enhanced reasoning stability.  
+  > ⚠️ **Note**: The `instantiation_prompt` module was introduced to improve structured reasoning and facilitate clearer extraction of thought processes and answers — this enhancement is **not included in the original RoT paper** and is unique to the **v2 release**, featured in our follow-up work [_Less is More_](https://arxiv.org/abs/2504.16408).
+
+- `2024-12` 🎉🎉🎉 Initial RoT demo (v1) released on GitHub!  
+
+- `2024-10` 🎉🎉🎉 Our paper [_Reversal of Thought_](https://arxiv.org/pdf/2410.12323) was released on arXiv!  
+
+---
+
+## 📖 Citation
+If you find our work useful for your research, please kindly cite our paper as follows:
+```bibtex
+@article{yuan2024reversal,
+  title={Reversal of Thought: Enhancing Large Language Models with Preference-Guided Reverse Reasoning Warm-up},
+  author={Yuan, Jiahao and Du, Dehui and Zhang, Hao and Di, Zixiang and Naseem, Usman},
+  journal={arXiv preprint arXiv:2410.12323},
+  year={2024},
+  note={Accepted to ACL 2025 (Main Conference)}
+}
+
+@article{yuan2025llmsr,
+  title={LLMSR@ XLLM25: Less is More: Enhancing Structured Multi-Agent Reasoning via Quality-Guided Distillation},
+  author={Yuan, Jiahao and Sun, Xingzhe and Yu, Xing and Wang, Jingwen and Du, Dehui and Cui, Zhiqing and Di, Zixiang},
+  journal={arXiv e-prints},
+  pages={arXiv--2504},
+  year={2025},
+  note={Accepted to ACL 2025 Workshop XLLM Shared Task}
+}
+```
+
+---
+
 ## 📚 Dataset
-- **24-Game**( [1](https://github.com/princeton-nlp/tree-of-thought-llm) & [2](https://huggingface.co/datasets/nlile/24-game) );
+- **24-Game**( [1](https://github.com/princeton-nlp/tree-of-thought-llm) & [2](https://huggingface.co/datasets/nlile/24-game) ) – 1,000 samples used for evaluation;
 - [**BIG-Bench**](https://github.com/google/BIG-bench);
 - [**PythonProgrammingPuzzles**](https://github.com/microsoft/PythonProgrammingPuzzles);
 - [**MGSM**](https://github.com/google-research/url-nlp/tree/main/mgsm);
 - **SonnetWriting**( [1](https://huggingface.co/datasets/turingmachine/meta-prompting/viewer/default/SonnetWriting) & [2](https://github.com/iljones00/Shakespearean-Sonnets-GPT) )
-## 🧩 Model Architecture
-<img src="./asset/Reversal_Of_Thought.png">
+
+---
 
 ## 🚀 Demo for _Preference-Guided Reverse Reasoning_
 🎉🎉🎉 Run `reversal_demo.py` to see the framework in action:
@@ -26,6 +68,9 @@ llm_taste=rot_pipeline(
   pipeline, reversal_of_thought, demos=demos, warmup=5
 )
 ```
+
+---
+
 ## 💡 What might `reversal_demo.py` be used for?
 - **Enhance LLM-Preferred Prompts for Task Solutions**  
   Refines prompts to align with LLM-preferred strategies, optimizing task-solving efficiency.
@@ -33,20 +78,13 @@ llm_taste=rot_pipeline(
 - **Potential for Creating Diverse QA Datasets**  
   Generates varied question-answer pairs to improve dataset diversity.
 
+---
+
 ## 📬 Contact Us
 We'd love to hear from you! Whether you have ideas, potential applications, or simply want to chat about this project, feel free to get in touch:
 💌 **Email**: [reversalofthought@163.com](mailto:reversalofthought@163.com)
 
-## 📖 Citation
-If you find our work useful for your research, please kindly cite our paper as follows:
-```bibtex
-@article{yuan2024reversal,
-  title={Reversal of Thought: Enhancing Large Language Models with Preference-Guided Reverse Reasoning Warm-up},
-  author={Yuan, Jiahao and Du, Dehui and Zhang, Hao and Di, Zixiang and Naseem, Usman},
-  journal={arXiv preprint arXiv:2410.12323},
-  year={2024}
-}
-```
+---
 
 ## 🙏 Acknowledgement
 
@@ -66,3 +104,9 @@ If you find our work useful for your research, please kindly cite our paper as f
   booktitle={First Conference on Language Modeling},
 }
 ```
+
+---
+
+## 📄 License
+
+This project is licensed under the [GNU General Public License v3.0 (GPL-3.0)](https://www.gnu.org/licenses/gpl-3.0.en.html).
