@@ -17,7 +17,8 @@ RoT improves reasoning accuracy and efficiency while minimizing computational co
   > 🏆 **Achieved 3rd place** in the LLMSR@XLLM 2025 Shared Task-III: [LLM for Structural Reasoning](https://github.com/xllms/LLMSR)!
 
 - `2025-04` 🎉🎉🎉 RoT demo (v2) demo released with enhanced reasoning stability.  
-  > ⚠️ **Note**: The `instantiation_prompt` module was introduced to improve structured reasoning and facilitate clearer extraction of thought processes and answers — this enhancement is **not included in the original RoT paper** and is unique to the **v2 release**, featured in our follow-up work [_Less is More_](https://arxiv.org/abs/2504.16408).
+  > ⚠️ **Note**: The `instantiation_prompt` module was introduced to improve structured reasoning and facilitate clearer extraction of thought processes and answers — this enhancement is **not included in the original RoT paper** and is unique to the **v2 release**, featured in our follow-up work [_Less is More_](https://arxiv.org/abs/2504.16408).  
+  > ✅ **For better stability and clearer reasoning**, we encourage using the v2 demo in both academic and practical settings.
 
 - `2024-12` 🎉🎉🎉 Initial RoT demo (v1) released on GitHub!  
 
