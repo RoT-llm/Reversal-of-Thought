@@ -23,7 +23,8 @@ parser.add_argument('--candidate_temperature', default=0.7, type=float,
                     help='Sampling temperature for candidates generation (higher values = more random)')
 parser.add_argument('--instantiation_temperature', default=0.1, type=float,
                     help='Sampling temperature for reasoning (higher values = more random)')
-
+parser.add_argument('--max_tokens', default=2048, type=int,
+                    help='Maximum number of tokens to generate')
 if __name__ == '__main__':
     args = parser.parse_args()
     task = args.task_name
@@ -33,6 +34,7 @@ if __name__ == '__main__':
     top_one = args.top_one
     candidate_temperature = args.candidate_temperature
     instantiation_temperature = args.instantiation_temperature
+    max_tokens=args.max_tokens
     now = datetime.datetime.now()
     timestamp_str = now.strftime("%Y-%m-%d-%H:%M:%S")
     output_dir = 'test_results'
@@ -43,7 +45,8 @@ if __name__ == '__main__':
         api_key=api_key,
         prob=True,
         candidate_temperature=candidate_temperature,
-        instantiation_temperature=instantiation_temperature
+        instantiation_temperature=instantiation_temperature,
+        max_tokens=max_tokens
     )
     # user_prompt=benchmark_input[task]
     # demos=user_prompt.split("###Example###")[1].split("###Input###")[0]

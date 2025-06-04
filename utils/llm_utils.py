@@ -71,6 +71,18 @@ class Pipeline:
                  prob=False,max_tokens=4096,
                  candidate_temperature=0.7,
                  instantiation_temperature=0.1):
+        """
+        Initialize the Pipeline class.
+
+        Args:
+        - model_id (str): Model identifier (either local model path or OpenAI model name).
+        - api_key (str, optional): OpenAI API key. If None, local inference is used.
+        - base_url (str): API base URL for OpenAI.
+        - prob (bool): Whether to request token log probabilities.
+        - max_tokens (int): Maximum number of tokens to generate.
+        - candidate_temperature (float): Sampling temperature for candidate generation.
+        - instantiation_temperature (float): Sampling temperature for instantiation generation.
+        """
         self.api = False
         self.local = False
         self.base_url = base_url
@@ -94,13 +106,37 @@ class Pipeline:
             self.api_key = api_key
 
     def compute_similarity(self,sentence1, sentence2):
+        """
+       Compute cosine similarity between two sentences using embeddings.
+
+       Args:
+       - sentence1 (str): First sentence.
+       - sentence2 (str): Second sentence.
+
+       Returns:
+       - float: Cosine similarity score.
+       """
         embedding1 = self.cpm.encode(sentence1, convert_to_tensor=True)
         embedding2 = self.cpm.encode(sentence2, convert_to_tensor=True)
         similarity = util.pytorch_cos_sim(embedding1, embedding2)
 
         return similarity.item()
     def get_respond(self, meta_prompt, user_prompt, max_tokens=None, prob=False, Switch="candidate"):
-        global logprobs, completion
+        """
+        Generate a response from the model, using either OpenAI API or local inference.
+
+        Args:
+        - meta_prompt (str): System prompt to guide the model.
+        - user_prompt (str): User input prompt.
+        - max_tokens (int, optional): Override the default max token limit.
+        - prob (bool): Whether to return average token probability.
+        - Switch (str): Mode of generation ('candidate' or 'instantiation').
+
+        Returns:
+        - str: The generated response.
+        - float (optional): Average probability if `prob` is True.
+        """
+        global logprobs, completion, outputs
         self.prob=prob
         if max_tokens:
             self.max_tokens=max_tokens
@@ -149,17 +185,26 @@ class Pipeline:
                 self.pipeline.tokenizer.eos_token_id,
                 self.pipeline.tokenizer.convert_tokens_to_ids("<|eot|>")
             ]
-
-            outputs = self.pipeline(
-                prompt,
-                max_new_tokens=2048,
-                eos_token_id=terminators,
-                do_sample=True,
-                temperature=0.4,
-                top_p=0.9,
-                logprobs=self.prob
-            )
-
+            if Switch == "candidate":
+                outputs = self.pipeline(
+                    prompt,
+                    max_new_tokens=self.max_tokens,
+                    eos_token_id=terminators,
+                    do_sample=True,
+                    temperature=self.candidate_temperature,
+                    top_p=0.9,
+                    logprobs=self.prob
+                )
+            elif Switch=="instantiation":
+                outputs = self.pipeline(
+                    prompt,
+                    max_new_tokens=self.max_tokens,
+                    eos_token_id=terminators,
+                    do_sample=True,
+                    temperature=self.instantiation_temperature,
+                    top_p=0.9,
+                    logprobs=self.prob
+                )
             response = outputs[0]["generated_text"][len(prompt):]
         if self.prob:
             logprobs = [token.logprob for token in completion.choices[0].logprobs.content]
