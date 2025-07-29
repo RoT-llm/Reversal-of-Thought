@@ -29,21 +29,20 @@ RoT improves reasoning accuracy and efficiency while minimizing computational co
 ## 📖 Citation
 If you find our work useful for your research, please kindly cite our paper as follows:
 ```bibtex
-@article{yuan2024reversal,
-  title={Reversal of Thought: Enhancing Large Language Models with Preference-Guided Reverse Reasoning Warm-up},
-  author={Yuan, Jiahao and Du, Dehui and Zhang, Hao and Di, Zixiang and Naseem, Usman},
-  journal={arXiv preprint arXiv:2410.12323},
-  year={2024},
-  note={Accepted to ACL 2025 (Main Conference)}
+@inproceedings{yuan2025reversal,
+    title = "Reversal of Thought: Enhancing Large Language Models with Preference-Guided Reverse Reasoning Warm-up",
+    author={Yuan, Jiahao and Du, Dehui and Zhang, Hao and Di, Zixiang and Naseem, Usman},
+    booktitle = "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    pages = "19442--19459",
+    year = "2025"
 }
 
-@article{yuan2025llmsr,
-  title={LLMSR@ XLLM25: Less is More: Enhancing Structured Multi-Agent Reasoning via Quality-Guided Distillation},
-  author={Yuan, Jiahao and Sun, Xingzhe and Yu, Xing and Wang, Jingwen and Du, Dehui and Cui, Zhiqing and Di, Zixiang},
-  journal={arXiv e-prints},
-  pages={arXiv--2504},
-  year={2025},
-  note={Accepted to ACL 2025 Workshop XLLM Shared Task}
+@inproceedings{yuan2025llmsr,
+    title = "LLMSR@XLLM25: Less is More: Enhancing Structured Multi-Agent Reasoning via Quality-Guided Distillation",
+    author={Yuan, Jiahao and Sun, Xingzhe and Yu, Xing and Wang, Jingwen and Du, Dehui and Cui, Zhiqing and Di, Zixiang},
+    booktitle = "Proceedings of the 1st Joint Workshop on Large Language Models and Structure Modeling (XLLM 2025)",
+    pages = "274--282",
+    year = "2025"
 }
 ```
 
